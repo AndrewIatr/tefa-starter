@@ -1,4 +1,5 @@
-(ns tefa-starter.core)
+(ns tefa-starter.core
+  (:require [clojure.string :as string]))
 
 ;; ---------
 ;; Nodes
@@ -19,7 +20,8 @@
 (defn describe-location
   "Give the description of a location. Location is expected to be
    a keyword and nodes a hashmap."
-  [location nodes])
+  [location nodes]
+  (nodes location))
 
 
 ;; ---------
@@ -51,7 +53,8 @@
 
 (defn describe-path
   "Describes a path tuple"
-  [path])
+  [path]
+  (str "there is a " (name (second path)) " going " (name (first path)) " from here."))
 
 ;; We need to take all the entries for a root key, describe them
 ;; using the function created above, and concatenate them.
@@ -63,7 +66,8 @@
 (defn describe-paths
   "Given a root location and an edges graph, describe all the paths
    the user can take from there"
-  [location edges])
+  [location edges]
+  (string/join " " (map describe-path (vals (edges location)))))
 
 
 ;; ----------
@@ -89,13 +93,23 @@
 
 (defn objects-at
   "Retuns the objects (keywords) at the specific location"
-  [location object-locations])
+  [location object-locations]
+  (keys (filter (fn [entry] (= location (first (val entry)))) object-locations)))
+
+(defn describe-object
+  "Describes an object"
+  [object-locations]
+     (str "there is " (name (first object-locations)) " on the " (name (second (second object-locations))) "."))
+
+(describe-object (first object-locations))
+
 
 ;; This function is very similar to describe paths.
 
 (defn describe-objects
   "Describes all the objects at the given location"
-  [location object-locations])
+  [location object-locations]
+  (string/join " " (map describe-object (select-keys object-locations (objects-at location object-locations)))))
 
 
 ;; ---------------
